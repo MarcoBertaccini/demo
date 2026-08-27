@@ -34,12 +34,13 @@ Corollari operativi:
 
 | Scelta | Decisione |
 |---|---|
-| Framework | **Astro**, output `static`. |
-| Stile | **Tailwind CSS** (via `@astrojs/tailwind`). |
-| Immagini | Integrazione immagini di Astro (`astro:assets`). |
+| Framework | **Astro 5**, output `static`, **Content Layer API**. |
+| Stile | **Tailwind CSS v4** via **`@tailwindcss/vite`** (l'integrazione `@astrojs/tailwind` è deprecata su Astro 5). Config CSS-first, nessun `tailwind.config`. |
+| Immagini | Foto sotto `src/assets/clients/<slug>/`, referenziate **per nome** dal JSON, risolte con `import.meta.glob` eager e ottimizzate con `astro:assets` (`<Image>`). |
 | Deploy | **GitHub Pages** + GitHub Actions (`withastro/action`), build al push su `main`. |
 | Dominio | `demo.zenith-studio.it` via `public/CNAME`. `site` = dominio custom, **nessun `base`**, così le route `/<slug>` non hanno prefissi. |
-| Dipendenze | Solo Astro, Tailwind, integrazione immagini. Nient'altro senza giustificazione. |
+| Dipendenze | Solo `astro`, `tailwindcss` + `@tailwindcss/vite`, `sharp` (usato da `astro:assets`). Nient'altro senza giustificazione. |
+| Repo/hosting | Account personale `MarcoBertaccini`, repo **pubblico**. Nessuna organizzazione per ora. |
 
 **Perché Astro e non altro.** Astro dà output statico puro, zero JS di default
 per pagina (mandiamo solo il piccolo IntersectionObserver e lo sticky WhatsApp),
@@ -47,17 +48,18 @@ content collections + zod già integrati per validare i dati cliente, e
 ottimizzazione immagini nativa. Copre tutti i requisiti senza aggiunte. Non
 vedo ragioni per deviare dalla default: la confermo.
 
-**Font (font-face self-hosted, non CDN, per performance e privacy).** Nessuna
-dipendenza npm: i `.woff2` stanno in `public/fonts/` e li dichiaro con
-`@font-face`. Proposta:
+**Font — DECISO: Fraunces (titoli) + Inter (testo), self-hosted.** Niente CDN,
+niente dipendenza npm: i `.woff2` stanno in `public/fonts/`, dichiarati con
+`@font-face`. **Subset `latin`**, **solo i pesi effettivamente usati** (niente
+variable font completa) per tenere il peso basso:
 
-- **Titoli (serif):** *Fraunces* — serif moderna, calda, con un'aria
-  editoriale che sta bene su foto grandi. Fallback: `Georgia, serif`.
+- **Titoli (serif):** *Fraunces* — serif moderna e calda, editoriale su foto
+  grandi. Fallback: `Georgia, serif`.
 - **Testo (sans):** *Inter* — neutra, leggibilissima da mobile. Fallback:
   `system-ui, -apple-system, sans-serif`.
 
-(Alternativa serif più classica se Fraunces risultasse troppo caratterizzata:
-*Cormorant Garamond*. Da decidere guardando la prima demo vera.)
+I pesi esatti (es. Fraunces 400/600, Inter 400/500/600) si fissano in M2 quando
+il design definisce la scala tipografica; in M1 non si carica ancora nessun font.
 
 **Palette base (neutra chiara, warm).** Definita come CSS custom properties;
 `accent` è l'unica sovrascritta per cliente.
@@ -81,8 +83,8 @@ pagina, così tutte le CTA e i dettagli lo ereditano senza toccare i componenti.
 
 ```
 demo/
-├── astro.config.mjs          # site, integrazioni, output static
-├── tailwind.config.mjs
+├── astro.config.mjs          # site, @tailwindcss/vite, output static
+├── tsconfig.json
 ├── package.json
 ├── plan.md
 ├── README.md
@@ -91,17 +93,20 @@ demo/
 │   └── new-client.mjs        # npm run new-client <slug>
 ├── public/
 │   ├── CNAME                 # demo.zenith-studio.it
-│   ├── fonts/                # .woff2 self-hosted
-│   ├── placeholder/          # immagini neutre di fallback
-│   └── clients/
-│       └── <slug>/           # foto del cliente (vedi Decisione A)
+│   └── fonts/                # .woff2 self-hosted (da M2)
 ├── src/
+│   ├── content.config.ts     # Content Layer: loader glob() + schema zod
 │   ├── content/
-│   │   ├── config.ts         # collection "clients" + schema zod
 │   │   └── clients/
 │   │       ├── _template.json    # tutti i campi vuoti, base per new-client
-│   │       └── <slug>.json       # un file per cliente
-│   ├── components/
+│   │       └── <slug>.json       # un file per cliente (lo slug = nome file)
+│   ├── assets/
+│   │   ├── placeholder/          # immagini neutre di fallback (astro:assets)
+│   │   └── clients/
+│   │       └── <slug>/           # foto del cliente, ottimizzate a build
+│   ├── styles/
+│   │   └── global.css            # @import "tailwindcss"; tokens/palette
+│   ├── components/                # (da M2)
 │   │   ├── Hero.astro
 │   │   ├── About.astro           # "La struttura" + amenities
 │   │   ├── Rooms.astro
@@ -116,32 +121,42 @@ demo/
 │   │   └── BaseLayout.astro
 │   ├── lib/
 │   │   ├── images.ts             # risoluzione immagini + placeholder
-│   │   └── whatsapp.ts           # costruzione link wa.me
+│   │   └── whatsapp.ts           # costruzione link wa.me (da M2)
 │   └── pages/
-│       ├── index.astro           # elenco demo (interno, noindex)
 │       └── [slug].astro          # genera una pagina per ogni cliente
 └── .github/workflows/deploy.yml
 ```
 
 **Routing.** `src/pages/[slug].astro` usa `getStaticPaths()` sulla collection
-`clients`: ogni file JSON → una route `/<slug>`. `index.astro` è una pagina
-interna (noindex) che elenca le demo esistenti, comoda per Zenith.
+`clients`: ogni file JSON → una route `/<slug>`. Lo **slug è l'`id` della entry**
+(nome del file senza estensione), non un campo del JSON.
+
+**Nessuna pagina indice in produzione.** L'elenco delle demo **non** deve finire
+nel build su Pages: la root non elenca i clienti. Se serve un indice comodo in
+sviluppo, esiste solo in dev (es. reso da una pagina che ritorna 404 in
+`import.meta.env.PROD`, oppure non esiste affatto). Deciso in M2/M3; in M1 non
+c'è nessuna `index`.
 
 ---
 
 ## 4. Schema dati cliente (content collection + zod)
 
-Un file per cliente: `src/content/clients/<slug>.json`. Validato a build time.
-**Obbligatori solo `slug` e `name`.** Tutto il resto è opzionale e ogni sezione
-degrada da sola. Bozza dello schema (semantica; sintassi zod definitiva in M1):
+Un file per cliente: `src/content/clients/<slug>.json`. Validato a build time
+con la **Content Layer API** e il loader `glob()`. **Lo `slug` è il nome del
+file** (l'`id` della entry), quindi **non** è un campo del JSON: l'unico campo
+obbligatorio dentro il JSON è **`name`**. Tutto il resto è opzionale e ogni
+sezione degrada da sola.
 
 ```ts
-// src/content/config.ts
+// src/content.config.ts
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
 const clients = defineCollection({
-  type: 'content', // JSON via glob loader
+  loader: glob({ pattern: '[!_]*.json', base: './src/content/clients' }),
   schema: z.object({
-    slug: z.string(),                       // OBBLIGATORIO
-    name: z.string(),                       // OBBLIGATORIO
+    // niente `slug`: deriva dall'id della entry (nome file)
+    name: z.string(),                       // UNICO OBBLIGATORIO
     tagline: z.string().optional(),
     description: z.array(z.string()).optional(),  // 2-3 paragrafi
 
@@ -323,37 +338,28 @@ WhatsApp/telefono/mail), dark mode, CMS.
 
 ---
 
-## 12. Decisioni aperte
+## 12. Decisioni prese e ancora aperte
 
-1. **Ottimizzazione immagini vs. cartella `public/`.** L'integrazione
-   `astro:assets` ottimizza le immagini *importate* (da `src/`, o via
-   `import.meta.glob` / helper `image()` nello schema), **non** i file serviti
-   staticamente da `public/`. C'è tensione con "immagini in `public/clients/<slug>/`
-   *ottimizzate*". Due strade (vedi Domanda 1): (a) spostare le foto sotto
-   `src/` e referenziarle per nome dal JSON, risolte via `import.meta.glob`
-   eager → ottimizzazione piena; (b) tenerle in `public/clients/<slug>/`
-   servite as-is, io le pre-comprimo a mano/con uno step nello script →
-   nessuna ottimizzazione a build ma workflow più semplice.
-2. **Set definitivo delle amenities** con icone: da fissare in M2 sui servizi
-   realmente ricorrenti in Romagna.
-3. **Scelta serif definitiva** (Fraunces vs. Cormorant Garamond): da valutare
-   sulla prima demo vera, in M4.
+**Prese** (risposte del 2026-08-27):
 
----
+1. **Immagini — strada (a).** Foto sotto `src/assets/clients/<slug>/`,
+   referenziate per nome dal JSON, risolte con `import.meta.glob` eager e
+   ottimizzate con `astro:assets`. Lo script `new-client` crea quella cartella.
+2. **Font — Fraunces (titoli) + Inter (testo)**, self-hosted, subset `latin`,
+   solo i pesi usati (niente variable font completa).
+3. **Repo — account personale `MarcoBertaccini`, pubblico.** Nessuna
+   organizzazione per ora.
+4. **Content Layer API** (Astro 5): `src/content.config.ts` con loader `glob()`
+   sui JSON. Niente `type: 'content'`.
+5. **Slug dal nome file**, non nel JSON. Nel JSON obbligatorio solo `name`.
+6. **Nessuna pagina indice in produzione**: la root del build non elenca i
+   clienti (indice eventuale solo in dev).
+7. **Tailwind v4** via `@tailwindcss/vite` (non `@astrojs/tailwind`, deprecato
+   su Astro 5).
 
-## Domande (max 3, tutte qui)
+**Ancora aperte:**
 
-1. **Immagini — quale strada?** (a) foto sotto `src/` con ottimizzazione
-   `astro:assets` piena (referenziate per nome dal JSON, cartella comunque
-   `.../clients/<slug>/`), oppure (b) foto in `public/clients/<slug>/` servite
-   così come sono, pre-compresse a mano/da script, senza ottimizzazione a
-   build. La (a) rispetta meglio il tuo requisito di ottimizzazione; la (b) è
-   più semplice e più vicina alla lettera del brief. Quale preferisci?
-
-2. **Font — Fraunces come serif di default va bene**, o parti già da Cormorant
-   Garamond (più classica, "da agriturismo tradizionale")?
-
-3. **Visibilità/hosting** — il repo `demo` è pubblico e va bene per GitHub Pages
-   sul piano gratuito. Confermi che l'owner resta il tuo account personale
-   `MarcoBertaccini`, o vuoi spostarlo sotto un'organizzazione **Zenith Studio**
-   prima di procedere con il deploy (M3)?
+- **Set definitivo delle amenities** con icone: da fissare in M2 sui servizi
+  realmente ricorrenti in Romagna.
+- **Pesi tipografici esatti** di Fraunces/Inter: da fissare in M2 con la scala
+  del design.
