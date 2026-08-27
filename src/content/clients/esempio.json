@@ -1,0 +1,70 @@
+{
+  "name": "Agriturismo Podere degli Ulivi",
+  "tagline": "Colline, silenzio e colazioni fatte in casa a due passi dal mare",
+  "description": [
+    "Un casale ottocentesco ristrutturato tra gli ulivi dell'entroterra romagnolo, dove il tempo rallenta. Cinque camere, una piscina affacciata sui vigneti e la cucina della nonna ogni mattina.",
+    "Siamo a quindici minuti dalle spiagge della Riviera e a un passo dai borghi dell'entroterra: la posizione ideale per chi vuole il mare senza rinunciare alla quiete della campagna.",
+    "Vi accogliamo come amici: qui non ci sono orari rigidi, solo la voglia di farvi stare bene."
+  ],
+  "address": "Via dei Colli 12",
+  "city": "Bertinoro (FC)",
+  "phone": "+39 0543 123456",
+  "whatsapp": "393401234567",
+  "email": "info@poderedegliulivi.it",
+  "bookingUrl": "https://www.booking.com/hotel/it/podere-degli-ulivi.html",
+  "googleMapsUrl": "https://www.google.com/maps/place/Bertinoro",
+  "heroImage": "hero.jpg",
+  "gallery": ["g1.jpg", "g2.jpg", "g3.jpg", "g4.jpg"],
+  "rooms": [
+    {
+      "name": "Camera Ulivo",
+      "description": "Matrimoniale con vista sui vigneti e bagno privato.",
+      "priceFrom": 90,
+      "image": "room1.jpg"
+    },
+    {
+      "name": "Suite Vigna",
+      "description": "Ampia suite con salotto e terrazzo privato sulle colline.",
+      "priceFrom": 140,
+      "image": "room2.jpg"
+    },
+    {
+      "name": "Camera Rosmarino",
+      "description": "Tripla accogliente, ideale per famiglie.",
+      "priceFrom": 110,
+      "image": "room3.jpg"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Giulia M.",
+      "text": "Posto incantevole, colazione da sogno e accoglienza sincera. Torneremo di sicuro.",
+      "rating": 5,
+      "source": "Google"
+    },
+    {
+      "author": "Marco e Sara",
+      "text": "La quiete che cercavamo, a due passi dal mare. Camere pulitissime e proprietari gentilissimi.",
+      "rating": 5,
+      "source": "Booking"
+    },
+    {
+      "author": "Thomas B.",
+      "text": "Colazione con prodotti locali eccezionale. Piscina fantastica al tramonto.",
+      "rating": 4,
+      "source": "Google"
+    }
+  ],
+  "amenities": [
+    "wifi",
+    "parcheggio",
+    "colazione",
+    "animali",
+    "piscina",
+    "aria-condizionata",
+    "giardino"
+  ],
+  "checkIn": "15:00",
+  "checkOut": "10:00",
+  "accent": "#7A8450"
+}
