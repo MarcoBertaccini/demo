@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { resolveClientImage } from '../lib/images';
+
+// Una route per ogni file JSON in src/content/clients/. Lo slug è l'id.
+export async function getStaticPaths() {
+  const clients = await getCollection('clients');
+  return clients.map((client) => ({
+    params: { slug: client.id },
+    props: { client },
+  }));
+}
+
+const { client } = Astro.props;
+const d = client.data;
+const slug = client.id;
+
+// M1: nessun design. È solo un dump dei dati per verificare la pipeline
+// (Content Layer + schema + astro:assets + routing). Le sezioni curate
+// arrivano in M2.
+---
+
+<BaseLayout title={d.name}>
+  <main>
+    <h1>{d.name}</h1>
+    {d.tagline && <p>{d.tagline}</p>}
+
+    <Image src={resolveClientImage(slug, d.heroImage)} alt={d.name} width={1200} height={800} />
+
+    {d.description && d.description.map((p) => <p>{p}</p>)}
+
+    {
+      d.amenities && d.amenities.length > 0 && (
+        <ul>
+          {d.amenities.map((a) => (
+            <li>{a}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      d.rooms && d.rooms.length > 0 && (
+        <section>
+          <h2>Camere</h2>
+          {d.rooms.map((room) => (
+            <article>
+              <h3>{room.name}</h3>
+              <Image src={resolveClientImage(slug, room.image)} alt={room.name} width={800} height={600} />
+              {room.description && <p>{room.description}</p>}
+              {room.priceFrom != null && <p>da {room.priceFrom} €/notte</p>}
+            </article>
+          ))}
+        </section>
+      )
+    }
+
+    {
+      d.gallery && d.gallery.length > 0 && (
+        <section>
+          <h2>Galleria</h2>
+          {d.gallery.map((g) => (
+            <Image src={resolveClientImage(slug, g)} alt={d.name} width={800} height={600} />
+          ))}
+        </section>
+      )
+    }
+
+    {
+      d.reviews && d.reviews.length > 0 && (
+        <section>
+          <h2>Dicono di noi</h2>
+          {d.reviews.map((r) => (
+            <blockquote>
+              <p>{r.text}</p>
+              <cite>
+                {r.author}
+                {r.source && ` — ${r.source}`}
+                {r.rating != null && ` (${r.rating}/5)`}
+              </cite>
+            </blockquote>
+          ))}
+        </section>
+      )
+    }
+
+    <section>
+      <h2>Contatti</h2>
+      {d.phone && <p>Tel: {d.phone}</p>}
+      {d.whatsapp && <p>WhatsApp: {d.whatsapp}</p>}
+      {d.email && <p>Email: {d.email}</p>}
+      {d.address && <p>{d.address}{d.city && `, ${d.city}`}</p>}
+      {d.checkIn && <p>Check-in: {d.checkIn}</p>}
+      {d.checkOut && <p>Check-out: {d.checkOut}</p>}
+    </section>
+  </main>
+</BaseLayout>
