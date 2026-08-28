@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets';
+import { resolveClientImage } from '../lib/images';
+
+interface Props {
+  slug: string;
+  name: string;
+  tagline?: string;
+  heroImage?: string;
+  whatsappHref?: string | null;
+  bookingUrl?: string;
+}
+const { slug, name, tagline, heroImage, whatsappHref, bookingUrl } = Astro.props;
+const image = resolveClientImage(slug, heroImage);
+
+const WHATSAPP_ICON =
+  'M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Z';
+---
+
+<header class="relative min-h-[85svh] flex items-end overflow-hidden">
+  <Image
+    src={image}
+    alt={name}
+    width={1600}
+    height={1000}
+    widths={[640, 960, 1280, 1600]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 w-full h-full object-cover"
+  />
+  <div
+    class="absolute inset-0"
+    style="background: linear-gradient(to top, rgb(0 0 0 / 0.62) 0%, rgb(0 0 0 / 0.22) 45%, rgb(0 0 0 / 0.05) 100%);"
+  >
+  </div>
+
+  <div class="relative mx-auto w-full max-w-6xl px-6 pb-14 md:pb-20">
+    <h1 class="text-white text-4xl sm:text-5xl md:text-6xl max-w-3xl text-balance">
+      {name}
+    </h1>
+    {
+      tagline && (
+        <p class="mt-4 text-white/90 text-lg md:text-xl max-w-2xl text-pretty">{tagline}</p>
+      )
+    }
+    <div class="mt-8 flex flex-wrap gap-3">
+      {
+        whatsappHref && (
+          <a href={whatsappHref} target="_blank" rel="noopener" class="btn btn-accent">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d={WHATSAPP_ICON} />
+            </svg>
+            Scrivici su WhatsApp
+          </a>
+        )
+      }
+      {
+        bookingUrl && (
+          <a
+            href={bookingUrl}
+            target="_blank"
+            rel="noopener"
+            class="btn bg-white text-[color:var(--text)] hover:opacity-90"
+          >
+            Prenota
+          </a>
+        )
+      }
+    </div>
+  </div>
+</header>

@@ -1,0 +1,52 @@
+---
+import { Image } from 'astro:assets';
+import { resolveClientImage } from '../lib/images';
+
+interface Room {
+  name: string;
+  description?: string;
+  priceFrom?: number;
+  image?: string;
+}
+interface Props {
+  slug: string;
+  rooms: Room[];
+}
+const { slug, rooms } = Astro.props;
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">Camere</h2>
+  <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      rooms.map((room) => (
+        <article class="card flex flex-col">
+          <div class="aspect-[4/3] overflow-hidden">
+            <Image
+              src={resolveClientImage(slug, room.image)}
+              alt={room.name}
+              width={800}
+              height={600}
+              widths={[400, 600, 800]}
+              sizes="(min-width: 1024px) 22rem, (min-width: 640px) 45vw, 90vw"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="p-5 flex flex-col grow">
+            <h3 class="text-xl">{room.name}</h3>
+            {room.description && (
+              <p class="mt-2 text-[color:var(--muted)] text-pretty">{room.description}</p>
+            )}
+            {room.priceFrom != null && (
+              <p class="mt-4 pt-4 border-t border-[color:var(--border)] text-sm">
+                <span class="text-[color:var(--muted)]">da </span>
+                <span class="text-lg font-medium text-[color:var(--accent)]">{room.priceFrom} €</span>
+                <span class="text-[color:var(--muted)]"> / notte</span>
+              </p>
+            )}
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</div>

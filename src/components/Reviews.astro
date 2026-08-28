@@ -1,0 +1,45 @@
+---
+interface Review {
+  author: string;
+  text: string;
+  rating?: number;
+  source?: 'Google' | 'Booking';
+}
+interface Props {
+  reviews: Review[];
+}
+const { reviews } = Astro.props;
+const STAR = 'M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 7.1-1.01L12 2z';
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">Dicono di noi</h2>
+  <div class="mt-8 grid gap-6 md:grid-cols-3">
+    {
+      reviews.map((r) => (
+        <figure class="card p-6 flex flex-col">
+          {r.rating != null && (
+            <div class="flex gap-0.5 mb-3" aria-label={`${r.rating} su 5`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  fill={i < Math.round(r.rating!) ? 'var(--accent)' : 'var(--border)'}
+                >
+                  <path d={STAR} />
+                </svg>
+              ))}
+            </div>
+          )}
+          <blockquote class="grow text-pretty text-[color:var(--text)]">“{r.text}”</blockquote>
+          <figcaption class="mt-4 text-sm text-[color:var(--muted)]">
+            <span class="font-medium text-[color:var(--text)]">{r.author}</span>
+            {r.source && <span> · {r.source}</span>}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</div>

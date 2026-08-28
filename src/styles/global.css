@@ -81,6 +81,10 @@
     font-weight: 600;
     line-height: 1.12;
     letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   img {
     max-width: 100%;
@@ -101,12 +105,96 @@
     opacity: 0;
     transform: translateY(18px);
     transition:
-      opacity 0.6s ease,
-      transform 0.6s ease;
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
   }
   .fade-up.is-visible {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ─── Componenti riusabili (hover generico, identico per ogni cliente) ── */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .btn-accent {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .btn-outline {
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition:
+      transform 0.2s ease-out,
+      box-shadow 0.2s ease-out;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    background-color: var(--surface);
+  }
+
+  .gallery-item img {
+    transition: transform 0.5s ease;
+  }
+}
+
+/* Hover/lift solo dove il movimento è gradito. */
+@media (prefers-reduced-motion: no-preference) {
+  .btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  .btn-outline:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.35);
+  }
+  .gallery-item:hover img {
+    transform: scale(1.05);
+  }
+}
+
+/* Sotto reduced-motion l'hover resta comunque leggibile (colore, non moto). */
+@media (prefers-reduced-motion: reduce) {
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 }
 
