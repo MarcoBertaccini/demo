@@ -3,21 +3,68 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  accent?: string;
 }
 
-const { title } = Astro.props;
+const { title, description, accent } = Astro.props;
+
+// L'accent del cliente sovrascrive il default dei token. Se assente, resta
+// il default definito in :root. Questa è l'unica personalizzazione visiva.
+const rootStyle = accent ? `--accent: ${accent};` : undefined;
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang="it" style={rootStyle}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Le demo non vanno indicizzate finché non passano su dominio proprio. -->
     <meta name="robots" content="noindex,nofollow" />
+    {description && <meta name="description" content={description} />}
     <title>{title}</title>
+
+    <!-- Preload dei pesi critici per l'LCP (titolo + corpo). -->
+    <link
+      rel="preload"
+      href="/fonts/fraunces-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
   </head>
-  <body>
+  <body class="bg-bg text-text">
     <slot />
+
+    <script>
+      // Fade-up condiviso: un solo IntersectionObserver per tutte le sezioni.
+      // Sotto prefers-reduced-motion non facciamo nulla: la CSS lascia già il
+      // contenuto visibile.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('.fade-up');
+      if (!reduce && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
+        );
+        targets.forEach((el) => io.observe(el));
+      } else {
+        targets.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
   </body>
 </html>

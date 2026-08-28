@@ -1,0 +1,17 @@
+---
+// Wrapper di sezione con fade-up all'ingresso nel viewport.
+// L'animazione è puramente CSS (opacity/transform); questo componente aggiunge
+// solo la classe e l'attributo osservato. L'IntersectionObserver è unico e vive
+// in BaseLayout.
+interface Props {
+  id?: string;
+  class?: string;
+  'aria-labelledby'?: string;
+}
+
+const { id, class: className, ...rest } = Astro.props;
+---
+
+<section id={id} class:list={['fade-up', className]} {...rest}>
+  <slot />
+</section>
