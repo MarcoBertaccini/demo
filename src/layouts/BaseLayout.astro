@@ -3,21 +3,89 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  accent?: string;
 }
 
-const { title } = Astro.props;
+const { title, description, accent } = Astro.props;
+
+// Foreground leggibile sopra l'accent: sceglie il migliore fra scuro e bianco
+// in base alla luminanza, così le CTA restano leggibili qualunque colore scelga
+// il cliente. (Un accent molto slavato resta comunque un colore poco adatto:
+// vedi la nota nel README.)
+function readableFg(hex?: string): string | undefined {
+  if (!hex) return undefined;
+  const m = hex.replace('#', '');
+  if (m.length !== 6) return undefined;
+  const toLin = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  const [r, g, b] = [0, 2, 4].map((i) => toLin(parseInt(m.slice(i, i + 2), 16) / 255));
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return lum > 0.4 ? '#211d18' : '#ffffff';
+}
+
+// L'accent del cliente sovrascrive il default dei token. Se assente, resta
+// il default definito in :root. Questa è l'unica personalizzazione visiva.
+const accentFg = readableFg(accent);
+const rootStyle = accent
+  ? `--accent: ${accent};${accentFg ? ` --accent-fg: ${accentFg};` : ''}`
+  : undefined;
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang="it" style={rootStyle}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Le demo non vanno indicizzate finché non passano su dominio proprio. -->
     <meta name="robots" content="noindex,nofollow" />
+    {description && <meta name="description" content={description} />}
     <title>{title}</title>
+
+    <!-- Preload dei pesi critici per l'LCP (titolo + corpo). -->
+    <link
+      rel="preload"
+      href="/fonts/fraunces-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
   </head>
-  <body>
+  <body class="bg-bg text-text">
     <slot />
+
+    <footer class="mx-auto max-w-6xl px-6 py-10 text-sm text-[color:var(--muted)] border-t border-[color:var(--border)]">
+      Anteprima realizzata da <a class="underline hover:text-[color:var(--accent)]" href="https://zenith-studio.it" target="_blank" rel="noopener">Zenith Studio</a> · zenith-studio.it
+    </footer>
+
+    <script>
+      // Fade-up condiviso: un solo IntersectionObserver per tutte le sezioni.
+      // Sotto prefers-reduced-motion non facciamo nulla: la CSS lascia già il
+      // contenuto visibile.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('.fade-up');
+      if (!reduce && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
+        );
+        targets.forEach((el) => io.observe(el));
+      } else {
+        targets.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
   </body>
 </html>

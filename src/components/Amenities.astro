@@ -1,0 +1,62 @@
+---
+// Set controllato servizio -> { etichetta, icona }. Un valore fuori vocabolario
+// mostra un'icona generica e la stringa così com'è: nessuna demo si rompe per
+// un'amenity non prevista.
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+
+// Path SVG (viewBox 0 0 24 24, stroke=currentColor), set Lucide (MIT).
+const ICONS: Record<string, string> = {
+  wifi: '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.43a5 5 0 0 1 7 0"/>',
+  parcheggio: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+  'parcheggio-privato': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+  colazione: '<path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>',
+  animali: '<circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.05Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>',
+  piscina: '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
+  'aria-condizionata': '<line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/>',
+  climatizzazione: '<line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/>',
+  giardino: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+};
+const GENERIC = '<circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/>';
+
+const LABELS: Record<string, string> = {
+  wifi: 'Wi-Fi',
+  parcheggio: 'Parcheggio',
+  'parcheggio-privato': 'Parcheggio privato',
+  colazione: 'Colazione',
+  animali: 'Animali ammessi',
+  piscina: 'Piscina',
+  'aria-condizionata': 'Aria condizionata',
+  climatizzazione: 'Climatizzazione',
+  giardino: 'Giardino',
+};
+
+const resolved = items.map((key) => ({
+  label: LABELS[key] ?? key,
+  icon: ICONS[key] ?? GENERIC,
+}));
+---
+
+<ul class="flex flex-wrap gap-3 list-none p-0 m-0">
+  {
+    resolved.map((a) => (
+      <li class="chip">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--accent)"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          set:html={a.icon}
+        />
+        <span>{a.label}</span>
+      </li>
+    ))
+  }
+</ul>

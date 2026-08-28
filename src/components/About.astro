@@ -1,0 +1,31 @@
+---
+import Amenities from './Amenities.astro';
+
+interface Props {
+  description?: string[];
+  amenities?: string[];
+}
+const { description, amenities } = Astro.props;
+const hasAmenities = amenities && amenities.length > 0;
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">La struttura</h2>
+  {
+    description && description.length > 0 && (
+      <div class="mt-6 max-w-2xl space-y-4 text-lg text-[color:var(--muted)]">
+        {description.map((p) => (
+          <p class="text-pretty">{p}</p>
+        ))}
+      </div>
+    )
+  }
+  {
+    hasAmenities && (
+      <div class="mt-10">
+        <h3 class="text-sm uppercase tracking-wider text-[color:var(--muted)] mb-4">Servizi</h3>
+        <Amenities items={amenities!} />
+      </div>
+    )
+  }
+</div>

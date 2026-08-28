@@ -1,0 +1,71 @@
+---
+interface Props {
+  phone?: string;
+  email?: string;
+  whatsappHref?: string | null;
+  address?: string;
+  city?: string;
+  checkIn?: string;
+  checkOut?: string;
+}
+const { phone, email, whatsappHref, address, city, checkIn, checkOut } = Astro.props;
+const place = [address, city].filter(Boolean).join(', ');
+
+const ICON = {
+  phone: '<path d="M13.83 19.11A15 15 0 0 1 4.89 10.17 2 2 0 0 1 6.18 7.7l1.9-.63a2 2 0 0 1 2.36 1.03l.66 1.45a2 2 0 0 1-.45 2.3l-.7.63a12 12 0 0 0 3.89 3.89l.63-.7a2 2 0 0 1 2.3-.45l1.45.66a2 2 0 0 1 1.03 2.36l-.63 1.9a2 2 0 0 1-2.47 1.29Z"/>',
+  whatsapp: '<path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Z"/>',
+  email: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a2 2 0 0 1-2.06 0L2 7"/>',
+  pin: '<path d="M20 10c0 4.4-5.6 9.2-7.3 10.6a1 1 0 0 1-1.4 0C9.6 19.2 4 14.4 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+};
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">Contatti</h2>
+  <div class="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2 max-w-3xl">
+    {
+      phone && (
+        <a href={`tel:${phone.replace(/\s/g, '')}`} class="flex items-center gap-3 hover:text-[color:var(--accent)] transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.phone} />
+          <span>{phone}</span>
+        </a>
+      )
+    }
+    {
+      whatsappHref && (
+        <a href={whatsappHref} target="_blank" rel="noopener" class="flex items-center gap-3 hover:text-[color:var(--accent)] transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true" set:html={ICON.whatsapp} />
+          <span>WhatsApp</span>
+        </a>
+      )
+    }
+    {
+      email && (
+        <a href={`mailto:${email}`} class="flex items-center gap-3 hover:text-[color:var(--accent)] transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.email} />
+          <span>{email}</span>
+        </a>
+      )
+    }
+    {
+      place && (
+        <div class="flex items-center gap-3">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.pin} />
+          <span>{place}</span>
+        </div>
+      )
+    }
+    {
+      (checkIn || checkOut) && (
+        <div class="flex items-center gap-3">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.clock} />
+          <span>
+            {checkIn && <>Check-in {checkIn}</>}
+            {checkIn && checkOut && ' · '}
+            {checkOut && <>Check-out {checkOut}</>}
+          </span>
+        </div>
+      )
+    }
+  </div>
+</div>

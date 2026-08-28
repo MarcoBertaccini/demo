@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import { resolveClientImage } from '../lib/images';
+
+interface Props {
+  slug: string;
+  images: string[];
+  name: string;
+}
+const { slug, images, name } = Astro.props;
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">Galleria</h2>
+  <div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+    {
+      images.map((file, i) => (
+        <div class="gallery-item overflow-hidden rounded-xl aspect-square">
+          <Image
+            src={resolveClientImage(slug, file)}
+            alt={`${name} — foto ${i + 1}`}
+            width={700}
+            height={700}
+            widths={[300, 500, 700]}
+            sizes="(min-width: 768px) 20rem, 45vw"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      ))
+    }
+  </div>
+</div>
