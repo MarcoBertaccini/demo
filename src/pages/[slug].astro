@@ -1,8 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { resolveClientImage } from '../lib/images';
+import Section from '../components/Section.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Rooms from '../components/Rooms.astro';
+import Gallery from '../components/Gallery.astro';
+import Reviews from '../components/Reviews.astro';
+import Location from '../components/Location.astro';
+import Contact from '../components/Contact.astro';
+import StickyWhatsApp from '../components/StickyWhatsApp.astro';
+import { whatsappLink } from '../lib/whatsapp';
 
 // Una route per ogni file JSON in src/content/clients/. Lo slug è l'id.
 export async function getStaticPaths() {
@@ -17,83 +25,93 @@ const { client } = Astro.props;
 const d = client.data;
 const slug = client.id;
 
-// M1: nessun design. È solo un dump dei dati per verificare la pipeline
-// (Content Layer + schema + astro:assets + routing). Le sezioni curate
-// arrivano in M2.
+// Ogni sezione compare solo se ha dati: nessuna demo si rompe per un campo
+// mancante. Se non c'è WhatsApp, la CTA e il bottone fisso spariscono.
+const whatsappHref = whatsappLink(
+  d.whatsapp,
+  `Ciao ${d.name}, ho visto il vostro sito e vorrei qualche informazione.`,
+);
+
+const hasAbout = (d.description && d.description.length > 0) || (d.amenities && d.amenities.length > 0);
+const hasRooms = d.rooms && d.rooms.length > 0;
+const hasGallery = d.gallery && d.gallery.length > 0;
+const hasReviews = d.reviews && d.reviews.length > 0;
+const hasLocation = Boolean(d.address || d.city || d.googleMapsUrl);
+const hasContact = Boolean(
+  d.phone || d.email || whatsappHref || d.address || d.city || d.checkIn || d.checkOut,
+);
+
+const metaDescription = d.tagline ?? d.description?.[0];
+const band = 'py-16 md:py-24';
 ---
 
-<BaseLayout title={d.name}>
+<BaseLayout title={d.name} description={metaDescription} accent={d.accent}>
+  <Hero
+    slug={slug}
+    name={d.name}
+    tagline={d.tagline}
+    heroImage={d.heroImage}
+    whatsappHref={whatsappHref}
+    bookingUrl={d.bookingUrl}
+  />
+
   <main>
-    <h1>{d.name}</h1>
-    {d.tagline && <p>{d.tagline}</p>}
-
-    <Image src={resolveClientImage(slug, d.heroImage)} alt={d.name} width={1200} height={800} />
-
-    {d.description && d.description.map((p) => <p>{p}</p>)}
-
     {
-      d.amenities && d.amenities.length > 0 && (
-        <ul>
-          {d.amenities.map((a) => (
-            <li>{a}</li>
-          ))}
-        </ul>
+      hasAbout && (
+        <Section class={band} aria-label="La struttura">
+          <About description={d.description} amenities={d.amenities} />
+        </Section>
       )
     }
 
     {
-      d.rooms && d.rooms.length > 0 && (
-        <section>
-          <h2>Camere</h2>
-          {d.rooms.map((room) => (
-            <article>
-              <h3>{room.name}</h3>
-              <Image src={resolveClientImage(slug, room.image)} alt={room.name} width={800} height={600} />
-              {room.description && <p>{room.description}</p>}
-              {room.priceFrom != null && <p>da {room.priceFrom} €/notte</p>}
-            </article>
-          ))}
-        </section>
+      hasRooms && (
+        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Camere">
+          <Rooms slug={slug} rooms={d.rooms!} />
+        </Section>
       )
     }
 
     {
-      d.gallery && d.gallery.length > 0 && (
-        <section>
-          <h2>Galleria</h2>
-          {d.gallery.map((g) => (
-            <Image src={resolveClientImage(slug, g)} alt={d.name} width={800} height={600} />
-          ))}
-        </section>
+      hasGallery && (
+        <Section class={band} aria-label="Galleria">
+          <Gallery slug={slug} images={d.gallery!} name={d.name} />
+        </Section>
       )
     }
 
     {
-      d.reviews && d.reviews.length > 0 && (
-        <section>
-          <h2>Dicono di noi</h2>
-          {d.reviews.map((r) => (
-            <blockquote>
-              <p>{r.text}</p>
-              <cite>
-                {r.author}
-                {r.source && ` — ${r.source}`}
-                {r.rating != null && ` (${r.rating}/5)`}
-              </cite>
-            </blockquote>
-          ))}
-        </section>
+      hasReviews && (
+        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Recensioni">
+          <Reviews reviews={d.reviews!.slice(0, 3)} />
+        </Section>
       )
     }
 
-    <section>
-      <h2>Contatti</h2>
-      {d.phone && <p>Tel: {d.phone}</p>}
-      {d.whatsapp && <p>WhatsApp: {d.whatsapp}</p>}
-      {d.email && <p>Email: {d.email}</p>}
-      {d.address && <p>{d.address}{d.city && `, ${d.city}`}</p>}
-      {d.checkIn && <p>Check-in: {d.checkIn}</p>}
-      {d.checkOut && <p>Check-out: {d.checkOut}</p>}
-    </section>
+    {
+      hasLocation && (
+        <Section class={band} aria-label="Dove siamo">
+          <Location name={d.name} address={d.address} city={d.city} googleMapsUrl={d.googleMapsUrl} />
+        </Section>
+      )
+    }
+
+    {
+      hasContact && (
+        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Contatti">
+          <Contact
+            phone={d.phone}
+            email={d.email}
+            whatsappHref={whatsappHref}
+            address={d.address}
+            city={d.city}
+            checkIn={d.checkIn}
+            checkOut={d.checkOut}
+          />
+        </Section>
+      )
+    }
   </main>
+
+  {whatsappHref && <StickyWhatsApp href={whatsappHref} />}
 </BaseLayout>
