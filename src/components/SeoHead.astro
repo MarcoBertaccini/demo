@@ -1,0 +1,79 @@
+---
+import { getImage } from 'astro:assets';
+import { resolveClientImage } from '../lib/images';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  slug: string;
+  data: CollectionEntry<'clients'>['data'];
+}
+const { slug, data } = Astro.props;
+
+// canonical e og:url devono coincidere.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+const description = data.tagline ?? data.description?.[0] ?? data.name;
+
+// OG image: sempre presente (in mancanza di hero c'è il placeholder).
+const hero = resolveClientImage(slug, data.heroImage);
+const og = await getImage({ src: hero, width: 1200, height: 630, format: 'jpg' });
+const ogImage = new URL(og.src, Astro.site).href;
+
+// JSON-LD LodgingBusiness: solo dati realmente presenti, niente valori inventati.
+const ratings = (data.reviews ?? []).map((r) => r.rating).filter((n): n is number => n != null);
+const prices = (data.rooms ?? []).map((r) => r.priceFrom).filter((n): n is number => n != null);
+const minPrice = prices.length ? Math.min(...prices) : null;
+
+const jsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'LodgingBusiness',
+  name: data.name,
+  description,
+  url: canonical,
+  image: [ogImage],
+};
+if (data.phone) jsonLd.telephone = data.phone;
+if (data.email) jsonLd.email = data.email;
+if (data.address || data.city) {
+  jsonLd.address = {
+    '@type': 'PostalAddress',
+    ...(data.address ? { streetAddress: data.address } : {}),
+    ...(data.city ? { addressLocality: data.city } : {}),
+    addressCountry: 'IT',
+  };
+}
+if (data.checkIn) jsonLd.checkinTime = data.checkIn;
+if (data.checkOut) jsonLd.checkoutTime = data.checkOut;
+if (minPrice != null) jsonLd.priceRange = minPrice < 80 ? '€' : minPrice < 150 ? '€€' : '€€€';
+if (ratings.length) {
+  const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+  jsonLd.aggregateRating = {
+    '@type': 'AggregateRating',
+    ratingValue: Math.round(avg * 10) / 10,
+    reviewCount: ratings.length,
+    bestRating: 5,
+  };
+}
+
+// Evita che un eventuale "</script>" nei dati chiuda il blocco.
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<link rel="canonical" href={canonical} />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Zenith Studio" />
+<meta property="og:locale" content="it_IT" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={data.name} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={data.name} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<script type="application/ld+json" set:html={jsonLdText} is:inline />

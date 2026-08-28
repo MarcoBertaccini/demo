@@ -41,6 +41,12 @@ const rootStyle = accent
     {description && <meta name="description" content={description} />}
     <title>{title}</title>
 
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content={accent ?? '#b4552d'} />
+
+    <!-- Metadati per-pagina (canonical, OG, Twitter, JSON-LD): vedi SeoHead. -->
+    <slot name="head" />
+
     <!-- Preload dei pesi critici per l'LCP (titolo + corpo). -->
     <link
       rel="preload"
