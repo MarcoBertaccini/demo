@@ -10,6 +10,7 @@ import Reviews from '../components/Reviews.astro';
 import Location from '../components/Location.astro';
 import Contact from '../components/Contact.astro';
 import StickyWhatsApp from '../components/StickyWhatsApp.astro';
+import SeoHead from '../components/SeoHead.astro';
 import { whatsappLink } from '../lib/whatsapp';
 
 // Una route per ogni file JSON in src/content/clients/. Lo slug è l'id.
@@ -46,6 +47,8 @@ const band = 'py-16 md:py-24';
 ---
 
 <BaseLayout title={d.name} description={metaDescription} accent={d.accent}>
+  <SeoHead slot="head" slug={slug} data={d} />
+
   <Hero
     slug={slug}
     name={d.name}
