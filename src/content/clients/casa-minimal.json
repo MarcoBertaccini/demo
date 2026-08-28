@@ -1,0 +1,16 @@
+{
+  "name": "Locanda Belvedere",
+  "tagline": "Poche camere, tanta vista",
+  "whatsapp": "393339998877",
+  "email": "ciao@locandabelvedere.it",
+  "city": "Brisighella (RA)",
+  "amenities": ["wifi", "colazione", "spa"],
+  "reviews": [
+    {
+      "author": "Elena R.",
+      "text": "Vista stupenda e accoglienza calorosa. Consigliatissimo."
+    }
+  ],
+  "checkIn": "14:00",
+  "accent": "#3E5C76"
+}
