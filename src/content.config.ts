@@ -35,6 +35,7 @@ const clients = defineCollection({
     googleMapsUrl: z.preprocess(emptyToUndef, z.string().url().optional()),
 
     heroImage: z.string().optional(), // nome file in src/assets/clients/<slug>/
+    aboutImage: z.string().optional(), // immagine affiancata al "Chi siamo"
     gallery: z.array(z.string()).optional(),
 
     rooms: z

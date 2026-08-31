@@ -4,6 +4,9 @@
 // colore, tipografia e i contatti principali in evidenza. Composizione:
 // colonna sinistra (eyebrow → nome → titolare → tagline → CTA), colonna destra
 // (pannello contatti). Su mobile le due colonne si impilano.
+import { Image } from 'astro:assets';
+import { resolveClientImage } from '../lib/images';
+
 interface Props {
   name: string;
   owner?: string;
@@ -14,8 +17,12 @@ interface Props {
   email?: string;
   address?: string;
   city?: string;
+  slug?: string;
+  heroImage?: string;
 }
-const { name, owner, tagline, eyebrow, phone, mobile, email, address, city } = Astro.props;
+const { name, owner, tagline, eyebrow, phone, mobile, email, address, city, slug, heroImage } =
+  Astro.props;
+const bgImage = slug && heroImage ? resolveClientImage(slug, heroImage) : null;
 const telHref = phone ? `tel:${phone.replace(/\s/g, '')}` : null;
 const mobHref = mobile ? `tel:${mobile.replace(/\s/g, '')}` : null;
 const mailHref = email ? `mailto:${email}` : null;
@@ -32,8 +39,30 @@ const ICON = {
 };
 ---
 
-<header id="top" class="text-[color:var(--accent-fg)]" style="background-color: var(--accent);">
-  <div class="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
+<header id="top" class="relative overflow-hidden text-[color:var(--accent-fg)]" style="background-color: var(--accent);">
+  {
+    bgImage && (
+      <>
+        <Image
+          src={bgImage}
+          alt=""
+          width={1920}
+          height={1280}
+          widths={[768, 1280, 1920]}
+          sizes="100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Velo in accent: la foto resta come texture, il testo bianco resta leggibile. */}
+        <div
+          class="absolute inset-0"
+          style="background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 82%, transparent) 0%, color-mix(in srgb, var(--accent) 92%, transparent) 100%);"
+        />
+      </>
+    )
+  }
+  <div class="relative mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
     <div class="grid gap-10 md:grid-cols-[1.6fr_1fr] md:gap-16 md:items-center">
       <div>
         {

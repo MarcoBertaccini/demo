@@ -83,6 +83,8 @@ const band = 'py-16 md:py-24';
         email={d.email}
         address={d.address}
         city={d.city}
+        slug={slug}
+        heroImage={d.heroImage}
       />
     ) : (
       <Hero
@@ -104,6 +106,9 @@ const band = 'py-16 md:py-24';
             description={d.description}
             amenities={isStudio ? undefined : d.amenities}
             heading={isStudio ? 'Chi siamo' : undefined}
+            slug={slug}
+            image={isStudio ? d.aboutImage : undefined}
+            imageAlt={isStudio ? 'Strumento per rilievi topografici in campo' : undefined}
           />
         </Section>
       )
