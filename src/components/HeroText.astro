@@ -39,7 +39,7 @@ const ICON = {
 };
 ---
 
-<header id="top" class="relative overflow-hidden text-[color:var(--accent-fg)]" style="background-color: var(--accent);">
+<header id="top" class="relative flex min-h-[86svh] items-center overflow-hidden text-[color:var(--accent-fg)]" style="background-color: var(--accent);">
   {
     bgImage && (
       <>
@@ -57,7 +57,7 @@ const ICON = {
         {/* Velo in accent: la foto resta come texture, il testo bianco resta leggibile. */}
         <div
           class="absolute inset-0"
-          style="background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 82%, transparent) 0%, color-mix(in srgb, var(--accent) 92%, transparent) 100%);"
+          style="background: linear-gradient(100deg, color-mix(in srgb, var(--accent) 93%, transparent) 0%, color-mix(in srgb, var(--accent) 85%, transparent) 42%, color-mix(in srgb, var(--accent) 60%, transparent) 100%);"
         />
       </>
     )

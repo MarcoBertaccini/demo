@@ -34,12 +34,10 @@ const photo = slug && image ? resolveClientImage(slug, image) : null;
         <Image
           src={photo}
           alt={imageAlt ?? heading}
-          width={1400}
-          height={934}
           widths={[560, 900, 1400]}
           sizes="(min-width: 768px) 45vw, 100vw"
           loading="lazy"
-          class="w-full rounded-2xl border border-[color:var(--border)] object-cover shadow-sm md:aspect-[4/3]"
+          class="aspect-[4/3] w-full rounded-2xl border border-[color:var(--border)] object-cover shadow-sm"
         />
       </div>
     ) : (
