@@ -24,7 +24,7 @@ const { services, heading = 'Servizi' } = Astro.props;
           class="svc-item group flex flex-col border-b border-r border-[color:var(--border)] p-6 transition-colors duration-200 md:p-8"
           style="--hover: color-mix(in srgb, var(--accent) 4%, var(--surface));"
         >
-          <span class="h-[3px] w-6 rounded-full bg-[color:var(--accent)] transition-all duration-300 group-hover:w-10" aria-hidden="true" />
+          <span class="h-[3px] w-6 origin-left rounded-full bg-[color:var(--accent)] transition-transform duration-300 group-hover:scale-x-150" aria-hidden="true" />
           <h3 class="mt-5 text-lg font-semibold transition-colors duration-200 group-hover:text-[color:var(--accent)]">
             {s.title}
           </h3>
