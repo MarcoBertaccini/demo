@@ -397,31 +397,54 @@ slot `heroImage` esiste già e si potrà riattivare l'OG image.
 Consegna a **due passate**. Priorità: link inviabile al cliente domattina.
 
 ### 1ª passata — pagina online e visitabile (poi STOP e review di Marco)
-- [ ] **T1 — Schema**: campo `type` + `services` + contatti studio (`mobile`, `vat`, `facebookUrl`; nessun `fax`) in `content.config.ts`.
+- [x] **T1 — Schema**: campo `type` + `services` + contatti studio (`mobile`, `vat`, `facebookUrl`; nessun `fax`) in `content.config.ts`.
       *Verifica*: `npm run build` verde.
-- [ ] **T2 — Scheletro dati**: `npm run new-client casalboni`; `type: "studio"`, accent `#2C4A52`, dati contatto.
+- [x] **T2 — Scheletro dati**: `npm run new-client casalboni`; `type: "studio"`, accent `#2C4A52`, dati contatto.
       *Verifica*: la entry compare in build senza errori Zod.
-- [ ] **T3 — HeroText.astro** + diramazione Hero nella rotta per `type studio`.
+- [x] **T3 — HeroText.astro** + diramazione Hero nella rotta per `type studio`.
       *Verifica*: preview `/casalboni` mostra hero testuale, nessun `<img>`.
-- [ ] **T4 — Services.astro** + campo `services` popolato (9 card) + sezione in rotta.
+- [x] **T4 — Services.astro** + campo `services` popolato (9 card) + sezione in rotta.
       *Verifica*: griglia responsive 1→2→3 colonne; hover card.
-- [ ] **T5 — Chi siamo**: About con `heading="Chi siamo"`, senza amenities; testo bozza.
+- [x] **T5 — Chi siamo**: About con `heading="Chi siamo"`, senza amenities; testo bozza.
       *Verifica*: titolo corretto, niente chip.
-- [ ] **T6 — Contatti**: Location (mappa) + Contact esteso: **"Telefono e fax"** (un numero, `tel:`), **cellulare** (voce separata, `tel:`), email (`mailto:`), indirizzo, P.IVA, Facebook.
+- [x] **T6 — Contatti**: Location (mappa) + Contact esteso: **"Telefono e fax"** (un numero, `tel:`), **cellulare** (voce separata, `tel:`), email (`mailto:`), indirizzo, P.IVA, Facebook.
       *Verifica*: link `tel:`/`mailto:` funzionanti; mappa carica.
-- [ ] **T7 — Tema studio**: `data-type` in BaseLayout, CSS titoli Inter, preload font condizionale (Inter 600), accent nel JSON.
+- [x] **T7 — Tema studio**: `data-type` in BaseLayout, CSS titoli Inter, preload font condizionale (Inter 600), accent nel JSON.
       *Verifica*: titoli in Inter; preload Inter 600; theme-color = accent.
-- [ ] **T8a — Metadati base**: `<title>` + meta description per casalboni (solo questi, in questa passata).
+- [x] **T8a — Metadati base**: `<title>` + meta description per casalboni (solo questi, in questa passata).
       *Verifica*: title/description corretti nell'HTML emesso.
-- [ ] **T11 — Build & deploy**: `npm run build` → verifica `dist/casalboni/index.html` (nessun `<img>`); branch da `main`, PR, merge → Action pubblica.
+- [x] **T11 — Build & deploy**: `npm run build` → verifica `dist/casalboni/index.html` (nessun `<img>`); branch da `main`, PR, merge → Action pubblica.
       *Verifica*: `demo.zenith-studio.it/casalboni` risponde. **→ STOP, mostro il link a Marco.**
 
 ### 2ª passata — dopo l'ok di Marco
-- [ ] **T8b — SEO completo**: SeoHead JSON-LD `ProfessionalService` (senza `og:image`); resto del gate `fixing-metadata` (canonical, OG/Twitter coerenti con l'assenza di immagine, favicon).
-- [ ] **T9 — A11y**: gate `fixing-accessibility` (contrasto, focus, tastiera, heading order, alt slot immagine).
-- [ ] **T10 — Motion**: gate `fixing-motion-performance` (fade/hover, reduced-motion).
+- [x] **T8b — SEO completo**: SeoHead JSON-LD `ProfessionalService` (senza `og:image`); resto del gate `fixing-metadata` (canonical, OG/Twitter coerenti con l'assenza di immagine, favicon).
+- [x] **T9 — A11y**: gate `fixing-accessibility` (contrasto, focus, tastiera, heading order, alt slot immagine).
+- [x] **T10 — Motion**: gate `fixing-motion-performance` (fade/hover, reduced-motion).
 
 ---
 
-**Stato: piano aggiornato con le decisioni approvate. In attesa del "parti" di Marco
-prima di scrivere qualsiasi codice di prodotto.**
+## 14. Aggiornamenti dopo il piano (fatti in corso d'opera, su richiesta di Marco)
+
+Modifiche decise **dopo** la stesura del piano; alcune ribaltano scelte dei §7.3/§11:
+
+- **Passata premium/editoriale**: hero come **fascia piena accent** (poi ingrandita
+  a `min-h-86svh` con overlay direzionale), titoli Inter, contrasto corpo alzato
+  (`--muted` scuro solo per studio, ~8.8:1).
+- **Navigazione**: **header sticky** con wordmark + **Chiama** e **menu hamburger**
+  a tendina (a ogni larghezza), smooth-scroll alle sezioni, ombra header allo scroll.
+- **Numerazione rimossa** (01–04 / 01–09) — non è una vera sequenza.
+- **Immagini aggiunte** (stock Unsplash, in attesa delle foto reali del cliente):
+  texture blueprint nell'hero + foto **edificio in costruzione** nel "Chi siamo".
+  → Questo **ribalta** la decisione §7.3: con una `heroImage` presente, l'**`og:image`
+  torna attivo** (usa la foto hero). Slot pronti per le foto reali (§12).
+- **Micro-animazioni**: fade/stagger allo scroll, hover, tutte compositor-only e
+  rispettose di `prefers-reduced-motion`.
+
+## Stato finale
+
+**Completato e pubblicato.** Entrambe le passate mergiate su `main` via PR
+(#5 e #6); deploy GitHub Pages riuscito. Sito **online** e verificato:
+`https://demo.zenith-studio.it/casalboni/` (HTTP 200).
+
+Restano aperti solo i punti **§12 — da confermare col cliente** (testi definitivi,
+voce "Topografia e rilievi", foto reali, loghi/certificazioni).
