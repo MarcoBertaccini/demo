@@ -1,8 +1,8 @@
 ---
 // Servizi dello studio resi come una griglia a linee sottili: celle separate da
-// filetti (niente box arrotondati), numero d'ordine, titolo e descrizione. Il
-// reticolo dà un'aria precisa e "tecnica", coerente con uno studio di geometra,
-// senza immagini né decori. `image` resta uno slot per il futuro.
+// filetti (niente box arrotondati). Ogni cella porta un breve segno in accent
+// come firma discreta (si allunga al passaggio del mouse). `image` resta uno
+// slot per il futuro.
 interface ServiceItem {
   title: string;
   description?: string;
@@ -19,15 +19,15 @@ const { services, heading = 'Servizi' } = Astro.props;
   <h2 class="text-3xl md:text-4xl">{heading}</h2>
   <ul class="mt-8 grid list-none grid-cols-1 border-l border-t border-[color:var(--border)] p-0 sm:grid-cols-2 lg:grid-cols-3">
     {
-      services.map((s, i) => (
-        <li class="group flex flex-col border-b border-r border-[color:var(--border)] p-6 transition-colors duration-200 md:p-8" style="--hover: color-mix(in srgb, var(--accent) 4%, var(--surface));">
-          <div class="flex items-baseline gap-3">
-            <span class="text-sm font-medium tabular-nums text-[color:var(--accent)]" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span class="h-px flex-1 bg-[color:var(--border)] transition-colors duration-200 group-hover:bg-[color:var(--accent)]" aria-hidden="true" />
-          </div>
-          <h3 class="mt-4 text-lg font-semibold">{s.title}</h3>
+      services.map((s) => (
+        <li
+          class="svc-item group flex flex-col border-b border-r border-[color:var(--border)] p-6 transition-colors duration-200 md:p-8"
+          style="--hover: color-mix(in srgb, var(--accent) 4%, var(--surface));"
+        >
+          <span class="h-[3px] w-6 rounded-full bg-[color:var(--accent)] transition-all duration-300 group-hover:w-10" aria-hidden="true" />
+          <h3 class="mt-5 text-lg font-semibold transition-colors duration-200 group-hover:text-[color:var(--accent)]">
+            {s.title}
+          </h3>
           {s.description && (
             <p class="mt-2 text-[15px] text-pretty text-[color:var(--muted)]">{s.description}</p>
           )}
@@ -39,9 +39,9 @@ const { services, heading = 'Servizi' } = Astro.props;
 
 <style>
   /* Tinta appena percettibile al passaggio del mouse (colore ricavato
-     dall'accent, così segue il cliente). È un cambio di colore, non di moto:
-     resta anche sotto prefers-reduced-motion. */
-  li.group:hover {
+     dall'accent). È un cambio di colore, non di moto: resta anche sotto
+     prefers-reduced-motion. */
+  li.svc-item:hover {
     background-color: var(--hover);
   }
 </style>

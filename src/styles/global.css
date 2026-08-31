@@ -75,6 +75,56 @@
   --muted: #4c463f;
 }
 
+/* Header sticky con vetro smerigliato; si "solleva" con un'ombra allo scroll. */
+.site-header {
+  background-color: color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  -webkit-backdrop-filter: saturate(1.4) blur(8px);
+  transition:
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+.site-header[data-scrolled] {
+  background-color: color-mix(in srgb, var(--surface) 93%, transparent);
+  box-shadow: 0 6px 24px -16px rgb(0 0 0 / 0.5);
+}
+
+/* Ancoraggi del menu: lo scroll fluido si disattiva sotto reduced-motion; il
+   margine tiene i titoli sotto l'header sticky quando si salta a una sezione. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+:root[data-type="studio"] section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+/* Comparsa a cascata delle celle Servizi quando la sezione entra nel viewport:
+   un solo momento orchestrato, non effetti sparsi. Sotto reduced-motion le
+   celle restano subito visibili. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-type="studio"] .svc-item {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+  }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(2) { transition-delay: 0.05s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(3) { transition-delay: 0.1s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(4) { transition-delay: 0.15s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(5) { transition-delay: 0.2s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(6) { transition-delay: 0.25s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(7) { transition-delay: 0.3s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(8) { transition-delay: 0.35s; }
+  :root[data-type="studio"] .fade-up.is-visible .svc-item:nth-child(9) { transition-delay: 0.4s; }
+}
+
 /* ─── Base ───────────────────────────────────────────────────────────── */
 @layer base {
   html {

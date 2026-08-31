@@ -51,6 +51,14 @@ const hasContact = Boolean(
     d.vat || d.facebookUrl || d.checkIn || d.checkOut,
 );
 
+// Voci del menu: solo le sezioni che verranno effettivamente renderizzate.
+const navLinks = [
+  hasAbout && { href: '#chi-siamo', label: 'Chi siamo' },
+  hasServices && { href: '#servizi', label: 'Servizi' },
+  hasLocation && { href: '#dove-siamo', label: 'Dove siamo' },
+  hasContact && { href: '#contatti', label: 'Contatti' },
+].filter(Boolean) as { href: string; label: string }[];
+
 const metaDescription = d.tagline ?? d.description?.[0];
 // Titolo pagina: per lo studio arricchito con la località (CAP rimosso).
 const locality = d.city?.replace(/^\d{5}\s*/, '');
@@ -61,7 +69,7 @@ const band = 'py-16 md:py-24';
 <BaseLayout title={pageTitle} description={metaDescription} accent={d.accent} type={d.type}>
   <SeoHead slot="head" slug={slug} data={d} />
 
-  {isStudio && <Header name={d.name} phone={d.phone} />}
+  {isStudio && <Header name={d.name} phone={d.phone} links={navLinks} />}
 
   {
     isStudio ? (
@@ -91,7 +99,7 @@ const band = 'py-16 md:py-24';
   <main>
     {
       hasAbout && (
-        <Section class={band} index={isStudio ? '01' : undefined} aria-label={isStudio ? 'Chi siamo' : 'La struttura'}>
+        <Section class={band} id={isStudio ? 'chi-siamo' : undefined} aria-label={isStudio ? 'Chi siamo' : 'La struttura'}>
           <About
             description={d.description}
             amenities={isStudio ? undefined : d.amenities}
@@ -103,7 +111,7 @@ const band = 'py-16 md:py-24';
 
     {
       hasServices && (
-        <Section class={`${band} bg-[color:var(--surface)]`} index="02" aria-label="Servizi">
+        <Section class={`${band} bg-[color:var(--surface)]`} id="servizi" aria-label="Servizi">
           <Services services={d.services!} />
         </Section>
       )
@@ -135,15 +143,21 @@ const band = 'py-16 md:py-24';
 
     {
       hasLocation && (
-        <Section class={band} index={isStudio ? '03' : undefined} aria-label="Dove siamo">
-          <Location name={d.name} address={d.address} city={d.city} googleMapsUrl={d.googleMapsUrl} />
+        <Section class={band} id={isStudio ? 'dove-siamo' : undefined} aria-label="Dove siamo">
+          <Location
+            name={d.name}
+            address={d.address}
+            city={d.city}
+            googleMapsUrl={d.googleMapsUrl}
+            blurb={isStudio ? 'Apri le indicazioni stradali per raggiungere lo studio.' : undefined}
+          />
         </Section>
       )
     }
 
     {
       hasContact && (
-        <Section class={`${band} bg-[color:var(--surface)]`} index={isStudio ? '04' : undefined} aria-label="Contatti">
+        <Section class={`${band} bg-[color:var(--surface)]`} id={isStudio ? 'contatti' : undefined} aria-label="Contatti">
           <Contact
             phone={d.phone}
             phoneLabel={isStudio ? 'Telefono e fax' : undefined}
