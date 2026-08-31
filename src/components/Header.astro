@@ -110,7 +110,15 @@ const PHONE =
     if (e.key === 'Escape') setMenu(false);
   });
 
-  const onScroll = () => header?.toggleAttribute('data-scrolled', window.scrollY > 4);
+  // Scrive l'attributo solo quando lo stato cambia, non a ogni frame di scroll.
+  let scrolled = false;
+  const onScroll = () => {
+    const s = window.scrollY > 4;
+    if (s !== scrolled) {
+      scrolled = s;
+      header?.toggleAttribute('data-scrolled', s);
+    }
+  };
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 </script>

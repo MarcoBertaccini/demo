@@ -26,14 +26,16 @@ if (emitImage) {
   ogImage = new URL(og.src, Astro.site).href;
 }
 
-// JSON-LD LodgingBusiness: solo dati realmente presenti, niente valori inventati.
+// JSON-LD: ProfessionalService per gli studi tecnici, LodgingBusiness per i B&B.
+// Solo dati realmente presenti, niente valori inventati.
+const isStudio = data.type === 'studio';
 const ratings = (data.reviews ?? []).map((r) => r.rating).filter((n): n is number => n != null);
 const prices = (data.rooms ?? []).map((r) => r.priceFrom).filter((n): n is number => n != null);
 const minPrice = prices.length ? Math.min(...prices) : null;
 
 const jsonLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
-  '@type': 'LodgingBusiness',
+  '@type': isStudio ? 'ProfessionalService' : 'LodgingBusiness',
   name: data.name,
   description,
   url: canonical,
@@ -41,14 +43,22 @@ const jsonLd: Record<string, unknown> = {
 };
 if (data.phone) jsonLd.telephone = data.phone;
 if (data.email) jsonLd.email = data.email;
+if (data.facebookUrl) jsonLd.sameAs = [data.facebookUrl];
+if (data.vat) jsonLd.vatID = data.vat;
+// Separa CAP e località se la città è nel formato "47035 Gambettola (FC)".
+const cityMatch = data.city?.match(/^(\d{5})\s+(.+)$/);
+const postalCode = cityMatch?.[1];
+const locality = cityMatch?.[2] ?? data.city;
 if (data.address || data.city) {
   jsonLd.address = {
     '@type': 'PostalAddress',
     ...(data.address ? { streetAddress: data.address } : {}),
-    ...(data.city ? { addressLocality: data.city } : {}),
+    ...(postalCode ? { postalCode } : {}),
+    ...(locality ? { addressLocality: locality } : {}),
     addressCountry: 'IT',
   };
 }
+if (isStudio && locality) jsonLd.areaServed = locality;
 if (data.checkIn) jsonLd.checkinTime = data.checkIn;
 if (data.checkOut) jsonLd.checkoutTime = data.checkOut;
 if (minPrice != null) jsonLd.priceRange = minPrice < 80 ? '€' : minPrice < 150 ? '€€' : '€€€';
