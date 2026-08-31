@@ -1,23 +1,56 @@
 ---
+import { Image } from 'astro:assets';
 import Amenities from './Amenities.astro';
+import { resolveClientImage } from '../lib/images';
 
 interface Props {
   description?: string[];
   amenities?: string[];
+  heading?: string;
+  slug?: string;
+  image?: string;
+  imageAlt?: string;
 }
-const { description, amenities } = Astro.props;
+const { description, amenities, heading = 'La struttura', slug, image, imageAlt } = Astro.props;
 const hasAmenities = amenities && amenities.length > 0;
+const hasDescription = description && description.length > 0;
+const photo = slug && image ? resolveClientImage(slug, image) : null;
 ---
 
 <div class="mx-auto max-w-6xl px-6">
-  <h2 class="text-3xl md:text-4xl">La struttura</h2>
   {
-    description && description.length > 0 && (
-      <div class="mt-6 max-w-2xl space-y-4 text-lg text-[color:var(--muted)]">
-        {description.map((p) => (
-          <p class="text-pretty">{p}</p>
-        ))}
+    photo ? (
+      <div class="grid gap-10 md:grid-cols-2 md:items-center md:gap-14">
+        <div>
+          <h2 class="text-3xl md:text-4xl">{heading}</h2>
+          {hasDescription && (
+            <div class="mt-6 space-y-4 text-lg text-[color:var(--muted)]">
+              {description!.map((p) => (
+                <p class="text-pretty">{p}</p>
+              ))}
+            </div>
+          )}
+        </div>
+        <Image
+          src={photo}
+          alt={imageAlt ?? heading}
+          widths={[560, 900, 1400]}
+          sizes="(min-width: 768px) 45vw, 100vw"
+          loading="lazy"
+          class="aspect-[4/3] w-full rounded-2xl border border-[color:var(--border)] object-cover shadow-sm"
+        />
       </div>
+    ) : (
+      <>
+        <h2 class="text-3xl md:text-4xl">{heading}</h2>
+        {hasDescription && (
+          <div class="mt-6 max-w-2xl space-y-4 text-lg text-[color:var(--muted)]">
+            {description!.map((p) => (
+              <p class="text-pretty">{p}</p>
+            ))}
+          </div>
+        )}
+      </>
     )
   }
   {

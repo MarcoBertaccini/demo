@@ -1,0 +1,59 @@
+{
+  "name": "Studio Tecnico Casalboni",
+  "type": "studio",
+  "owner": "Geom. Luciano Casalboni",
+  "tagline": "Progettazione, pratiche edilizie e catasto a Gambettola (FC).",
+  "description": [
+    "Lo studio del Geom. Luciano Casalboni, a Gambettola, segue la progettazione architettonica dall'idea al titolo abilitativo: prepariamo la pratica edilizia completa da presentare all'ufficio comunale e accompagniamo il progetto in ogni passaggio.",
+    "Ci occupiamo di nuove costruzioni civili, fabbricati artigianali e commerciali, edifici rurali e depositi agricoli, oltre ad ampliamenti, ristrutturazioni, manutenzione straordinaria e opere interne. Curiamo anche l'adeguamento e la realizzazione degli impianti di fognatura per acque bianche e nere.",
+    "Un unico interlocutore per pratiche, catasto e cantiere, con un metodo di lavoro chiaro e tempi rispettati."
+  ],
+  "address": "Via Viole 55, int. 1",
+  "city": "47035 Gambettola (FC)",
+  "phone": "0547 54095",
+  "mobile": "393 2309508",
+  "email": "lucianocasalboni@virgilio.it",
+  "vat": "03258110406",
+  "facebookUrl": "https://www.facebook.com/Studiotecnicolucianocasalboni",
+  "heroImage": "hero.jpg",
+  "aboutImage": "cantiere.jpg",
+  "services": [
+    {
+      "title": "Progettazione e ristrutturazioni",
+      "description": "Progettazione architettonica di nuove costruzioni civili, artigianali e rurali, ampliamenti, ristrutturazioni e restauri, con pratica edilizia completa."
+    },
+    {
+      "title": "Direzione lavori",
+      "description": "Coordinamento del cantiere e contabilità delle opere fino a fine lavori."
+    },
+    {
+      "title": "Catasto",
+      "description": "Pratiche DOCFA, tipi mappale e di frazionamento, visure, estratti di mappa e planimetrie."
+    },
+    {
+      "title": "Topografia e rilievi",
+      "description": "Rilievi topografici a supporto delle pratiche edilizie e catastali."
+    },
+    {
+      "title": "Perizie e stime",
+      "description": "Valutazioni di terreni e fabbricati e relazioni di conformità urbanistica."
+    },
+    {
+      "title": "Certificazioni energetiche",
+      "description": "Attestati di Prestazione Energetica (APE)."
+    },
+    {
+      "title": "Calcoli strutturali",
+      "description": "Verifiche e calcoli per le opere strutturali."
+    },
+    {
+      "title": "Sicurezza e formazione",
+      "description": "Sicurezza sui luoghi di lavoro e formazione dei lavoratori."
+    },
+    {
+      "title": "Rendering e modellazione 3D",
+      "description": "Presentazione fotorealistica dei progetti."
+    }
+  ],
+  "accent": "#2C4A52"
+}

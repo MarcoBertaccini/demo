@@ -14,10 +14,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
 const description = data.tagline ?? data.description?.[0] ?? data.name;
 
-// OG image: sempre presente (in mancanza di hero c'è il placeholder).
-const hero = resolveClientImage(slug, data.heroImage);
-const og = await getImage({ src: hero, width: 1200, height: 630, format: 'jpg' });
-const ogImage = new URL(og.src, Astro.site).href;
+// OG image: per i siti "studio" (senza immagini) non emettiamo nessuna og:image,
+// per non consegnare un placeholder come anteprima social. Quando il cliente
+// fornirà una foto (heroImage), l'anteprima si riattiva. Negli altri casi c'è
+// sempre un'immagine (hero o placeholder).
+const emitImage = data.type !== 'studio' || Boolean(data.heroImage);
+let ogImage: string | null = null;
+if (emitImage) {
+  const hero = resolveClientImage(slug, data.heroImage);
+  const og = await getImage({ src: hero, width: 1200, height: 630, format: 'jpg' });
+  ogImage = new URL(og.src, Astro.site).href;
+}
 
 // JSON-LD LodgingBusiness: solo dati realmente presenti, niente valori inventati.
 const ratings = (data.reviews ?? []).map((r) => r.rating).filter((n): n is number => n != null);
@@ -30,7 +37,7 @@ const jsonLd: Record<string, unknown> = {
   name: data.name,
   description,
   url: canonical,
-  image: [ogImage],
+  ...(ogImage ? { image: [ogImage] } : {}),
 };
 if (data.phone) jsonLd.telephone = data.phone;
 if (data.email) jsonLd.email = data.email;
@@ -67,13 +74,13 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
 <meta property="og:url" content={canonical} />
 <meta property="og:title" content={data.name} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={ogImage} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+{ogImage && <meta property="og:image" content={ogImage} />}
+{ogImage && <meta property="og:image:width" content="1200" />}
+{ogImage && <meta property="og:image:height" content="630" />}
 
-<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
 <meta name="twitter:title" content={data.name} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImage} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}
 
 <script type="application/ld+json" set:html={jsonLdText} is:inline />

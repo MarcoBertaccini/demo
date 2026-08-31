@@ -1,0 +1,47 @@
+---
+// Servizi dello studio resi come una griglia a linee sottili: celle separate da
+// filetti (niente box arrotondati). Ogni cella porta un breve segno in accent
+// come firma discreta (si allunga al passaggio del mouse). `image` resta uno
+// slot per il futuro.
+interface ServiceItem {
+  title: string;
+  description?: string;
+  image?: string;
+}
+interface Props {
+  services: ServiceItem[];
+  heading?: string;
+}
+const { services, heading = 'Servizi' } = Astro.props;
+---
+
+<div class="mx-auto max-w-6xl px-6">
+  <h2 class="text-3xl md:text-4xl">{heading}</h2>
+  <ul class="mt-8 grid list-none grid-cols-1 border-l border-t border-[color:var(--border)] p-0 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      services.map((s) => (
+        <li
+          class="svc-item group flex flex-col border-b border-r border-[color:var(--border)] p-6 transition-colors duration-200 md:p-8"
+          style="--hover: color-mix(in srgb, var(--accent) 4%, var(--surface));"
+        >
+          <span class="h-[3px] w-6 rounded-full bg-[color:var(--accent)] transition-all duration-300 group-hover:w-10" aria-hidden="true" />
+          <h3 class="mt-5 text-lg font-semibold transition-colors duration-200 group-hover:text-[color:var(--accent)]">
+            {s.title}
+          </h3>
+          {s.description && (
+            <p class="mt-2 text-[15px] text-pretty text-[color:var(--muted)]">{s.description}</p>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  /* Tinta appena percettibile al passaggio del mouse (colore ricavato
+     dall'accent). È un cambio di colore, non di moto: resta anche sotto
+     prefers-reduced-motion. */
+  li.svc-item:hover {
+    background-color: var(--hover);
+  }
+</style>

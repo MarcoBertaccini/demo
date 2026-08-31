@@ -5,9 +5,10 @@ interface Props {
   title: string;
   description?: string;
   accent?: string;
+  type?: string; // "studio" restyla i titoli (Inter); default "lodging"
 }
 
-const { title, description, accent } = Astro.props;
+const { title, description, accent, type } = Astro.props;
 
 // Foreground leggibile sopra l'accent: sceglie il migliore fra scuro e bianco
 // in base alla luminanza, così le CTA restano leggibili qualunque colore scelga
@@ -32,7 +33,7 @@ const rootStyle = accent
 ---
 
 <!doctype html>
-<html lang="it" style={rootStyle}>
+<html lang="it" data-type={type} style={rootStyle}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -47,14 +48,27 @@ const rootStyle = accent
     <!-- Metadati per-pagina (canonical, OG, Twitter, JSON-LD): vedi SeoHead. -->
     <slot name="head" />
 
-    <!-- Preload dei pesi critici per l'LCP (titolo + corpo). -->
-    <link
-      rel="preload"
-      href="/fonts/fraunces-latin-600-normal.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    <!-- Preload dei pesi critici per l'LCP (titolo + corpo). Il font del titolo
+         dipende dal tipo di sito: "studio" usa Inter, gli altri Fraunces. -->
+    {
+      type === 'studio' ? (
+        <link
+          rel="preload"
+          href="/fonts/inter-latin-600-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      ) : (
+        <link
+          rel="preload"
+          href="/fonts/fraunces-latin-600-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
     <link
       rel="preload"
       href="/fonts/inter-latin-400-normal.woff2"

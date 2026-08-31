@@ -12,19 +12,30 @@ const clients = defineCollection({
   loader: glob({ pattern: '[!_]*.json', base: './src/content/clients' }),
   schema: z.object({
     name: z.string(), // unico campo obbligatorio
+
+    // Tipo di sito: distingue quali sezioni/JSON-LD usare. Default "lodging"
+    // (il B&B storico); "studio" = studio tecnico/professionale senza immagini.
+    // preprocess: "" del _template diventa undefined, così scatta il default.
+    type: z.preprocess(emptyToUndef, z.enum(['lodging', 'studio']).default('lodging')),
+
+    owner: z.string().optional(), // titolare, es. "Geom. Luciano Casalboni"
     tagline: z.string().optional(),
     description: z.array(z.string()).optional(), // 2-3 paragrafi
 
     address: z.string().optional(),
     city: z.string().optional(),
     phone: z.string().optional(),
+    mobile: z.string().optional(), // cellulare, voce separata dal fisso
     whatsapp: z.string().optional(), // numero E.164, es. "393401234567"
     email: z.preprocess(emptyToUndef, z.string().email().optional()),
+    vat: z.string().optional(), // P.IVA
+    facebookUrl: z.preprocess(emptyToUndef, z.string().url().optional()),
 
     bookingUrl: z.preprocess(emptyToUndef, z.string().url().optional()),
     googleMapsUrl: z.preprocess(emptyToUndef, z.string().url().optional()),
 
     heroImage: z.string().optional(), // nome file in src/assets/clients/<slug>/
+    aboutImage: z.string().optional(), // immagine affiancata al "Chi siamo"
     gallery: z.array(z.string()).optional(),
 
     rooms: z
@@ -33,6 +44,18 @@ const clients = defineCollection({
           name: z.string(),
           description: z.string().optional(),
           priceFrom: z.number().optional(), // €/notte
+          image: z.string().optional(),
+        }),
+      )
+      .optional(),
+
+    // Servizi dello studio: griglia di card. `image` è uno slot per il futuro
+    // (foto del cliente), non usato oggi.
+    services: z
+      .array(
+        z.object({
+          title: z.string(),
+          description: z.string().optional(),
           image: z.string().optional(),
         }),
       )
