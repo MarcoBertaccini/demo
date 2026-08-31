@@ -63,6 +63,14 @@
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+/* Tipo "studio": titoli in sans (Inter) invece del serif, per un tono tecnico e
+   sobrio da studio professionale. È l'unica differenza tipografica per-tipo; bg,
+   superficie, colori del testo e stack font restano quelli comuni del sistema
+   (l'accent resta l'unica personalizzazione per singolo cliente). */
+:root[data-type="studio"] {
+  --font-serif: "Inter", system-ui, -apple-system, sans-serif;
+}
+
 /* ─── Base ───────────────────────────────────────────────────────────── */
 @layer base {
   html {

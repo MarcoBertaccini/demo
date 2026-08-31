@@ -4,13 +4,14 @@ import Amenities from './Amenities.astro';
 interface Props {
   description?: string[];
   amenities?: string[];
+  heading?: string;
 }
-const { description, amenities } = Astro.props;
+const { description, amenities, heading = 'La struttura' } = Astro.props;
 const hasAmenities = amenities && amenities.length > 0;
 ---
 
 <div class="mx-auto max-w-6xl px-6">
-  <h2 class="text-3xl md:text-4xl">La struttura</h2>
+  <h2 class="text-3xl md:text-4xl">{heading}</h2>
   {
     description && description.length > 0 && (
       <div class="mt-6 max-w-2xl space-y-4 text-lg text-[color:var(--muted)]">

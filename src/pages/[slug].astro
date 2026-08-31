@@ -3,7 +3,9 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import Hero from '../components/Hero.astro';
+import HeroText from '../components/HeroText.astro';
 import About from '../components/About.astro';
+import Services from '../components/Services.astro';
 import Rooms from '../components/Rooms.astro';
 import Gallery from '../components/Gallery.astro';
 import Reviews from '../components/Reviews.astro';
@@ -26,6 +28,10 @@ const { client } = Astro.props;
 const d = client.data;
 const slug = client.id;
 
+// "studio" = studio tecnico/professionale senza immagini: hero testuale, sezione
+// servizi, niente camere/galleria/recensioni/WhatsApp. Default: B&B (lodging).
+const isStudio = d.type === 'studio';
+
 // Ogni sezione compare solo se ha dati: nessuna demo si rompe per un campo
 // mancante. Se non c'è WhatsApp, la CTA e il bottone fisso spariscono.
 const whatsappHref = whatsappLink(
@@ -34,35 +40,65 @@ const whatsappHref = whatsappLink(
 );
 
 const hasAbout = (d.description && d.description.length > 0) || (d.amenities && d.amenities.length > 0);
+const hasServices = Boolean(d.services && d.services.length > 0);
 const hasRooms = d.rooms && d.rooms.length > 0;
 const hasGallery = d.gallery && d.gallery.length > 0;
 const hasReviews = d.reviews && d.reviews.length > 0;
 const hasLocation = Boolean(d.address || d.city || d.googleMapsUrl);
 const hasContact = Boolean(
-  d.phone || d.email || whatsappHref || d.address || d.city || d.checkIn || d.checkOut,
+  d.phone || d.mobile || d.email || whatsappHref || d.address || d.city ||
+    d.vat || d.facebookUrl || d.checkIn || d.checkOut,
 );
 
 const metaDescription = d.tagline ?? d.description?.[0];
+// Titolo pagina: per lo studio arricchito con la località (CAP rimosso).
+const locality = d.city?.replace(/^\d{5}\s*/, '');
+const pageTitle = isStudio && locality ? `${d.name} — ${locality}` : d.name;
 const band = 'py-16 md:py-24';
 ---
 
-<BaseLayout title={d.name} description={metaDescription} accent={d.accent}>
+<BaseLayout title={pageTitle} description={metaDescription} accent={d.accent} type={d.type}>
   <SeoHead slot="head" slug={slug} data={d} />
 
-  <Hero
-    slug={slug}
-    name={d.name}
-    tagline={d.tagline}
-    heroImage={d.heroImage}
-    whatsappHref={whatsappHref}
-    bookingUrl={d.bookingUrl}
-  />
+  {
+    isStudio ? (
+      <HeroText
+        name={d.name}
+        owner={d.owner}
+        tagline={d.tagline}
+        eyebrow="Studio Tecnico"
+        phone={d.phone}
+        email={d.email}
+      />
+    ) : (
+      <Hero
+        slug={slug}
+        name={d.name}
+        tagline={d.tagline}
+        heroImage={d.heroImage}
+        whatsappHref={whatsappHref}
+        bookingUrl={d.bookingUrl}
+      />
+    )
+  }
 
   <main>
     {
       hasAbout && (
-        <Section class={band} aria-label="La struttura">
-          <About description={d.description} amenities={d.amenities} />
+        <Section class={band} aria-label={isStudio ? 'Chi siamo' : 'La struttura'}>
+          <About
+            description={d.description}
+            amenities={isStudio ? undefined : d.amenities}
+            heading={isStudio ? 'Chi siamo' : undefined}
+          />
+        </Section>
+      )
+    }
+
+    {
+      hasServices && (
+        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Servizi">
+          <Services services={d.services!} />
         </Section>
       )
     }
@@ -104,10 +140,14 @@ const band = 'py-16 md:py-24';
         <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Contatti">
           <Contact
             phone={d.phone}
+            phoneLabel={isStudio ? 'Telefono e fax' : undefined}
+            mobile={d.mobile}
             email={d.email}
             whatsappHref={whatsappHref}
             address={d.address}
             city={d.city}
+            vat={d.vat}
+            facebookUrl={d.facebookUrl}
             checkIn={d.checkIn}
             checkOut={d.checkOut}
           />

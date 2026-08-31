@@ -1,0 +1,61 @@
+---
+// Hero senza immagine per i siti "studio": il peso visivo lo reggono
+// tipografia, spazio e un accento di colore, non una foto. Composizione:
+// eyebrow → nome → titolare → tagline → CTA (telefono / email).
+interface Props {
+  name: string;
+  owner?: string;
+  tagline?: string;
+  eyebrow?: string;
+  phone?: string;
+  email?: string;
+}
+const { name, owner, tagline, eyebrow, phone, email } = Astro.props;
+const telHref = phone ? `tel:${phone.replace(/\s/g, '')}` : null;
+const mailHref = email ? `mailto:${email}` : null;
+
+const ICON = {
+  phone:
+    '<path d="M13.83 19.11A15 15 0 0 1 4.89 10.17 2 2 0 0 1 6.18 7.7l1.9-.63a2 2 0 0 1 2.36 1.03l.66 1.45a2 2 0 0 1-.45 2.3l-.7.63a12 12 0 0 0 3.89 3.89l.63-.7a2 2 0 0 1 2.3-.45l1.45.66a2 2 0 0 1 1.03 2.36l-.63 1.9a2 2 0 0 1-2.47 1.29Z"/>',
+  email:
+    '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a2 2 0 0 1-2.06 0L2 7"/>',
+};
+---
+
+<header class="relative overflow-hidden border-b border-[color:var(--border)]" style="background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg)) 0%, var(--bg) 100%);">
+  <div class="mx-auto w-full max-w-6xl px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+    {
+      eyebrow && (
+        <p class="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.14em] text-[color:var(--accent)]">
+          <span class="inline-block h-px w-8 bg-[color:var(--accent)]" aria-hidden="true" />
+          {eyebrow}
+        </p>
+      )
+    }
+    <h1 class="mt-5 max-w-3xl text-4xl sm:text-5xl md:text-6xl text-balance">{name}</h1>
+    {owner && <p class="mt-3 text-lg md:text-xl text-[color:var(--muted)]">{owner}</p>}
+    {
+      tagline && (
+        <p class="mt-6 max-w-2xl text-lg md:text-xl text-pretty">{tagline}</p>
+      )
+    }
+    {
+      (telHref || mailHref) && (
+        <div class="mt-9 flex flex-wrap gap-3">
+          {telHref && (
+            <a href={telHref} class="btn btn-accent">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.phone} />
+              Chiama {phone}
+            </a>
+          )}
+          {mailHref && (
+            <a href={mailHref} class="btn btn-outline">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.email} />
+              Scrivici
+            </a>
+          )}
+        </div>
+      )
+    }
+  </div>
+</header>
