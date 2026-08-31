@@ -1,7 +1,8 @@
 ---
-// Griglia dei servizi dello studio. Card sobrie: numero d'ordine come unico
-// elemento grafico (funzionale, non decorativo), titolo e descrizione breve.
-// `image` è uno slot previsto per il futuro; oggi non viene reso.
+// Servizi dello studio resi come una griglia a linee sottili: celle separate da
+// filetti (niente box arrotondati), numero d'ordine, titolo e descrizione. Il
+// reticolo dà un'aria precisa e "tecnica", coerente con uno studio di geometra,
+// senza immagini né decori. `image` resta uno slot per il futuro.
 interface ServiceItem {
   title: string;
   description?: string;
@@ -16,19 +17,31 @@ const { services, heading = 'Servizi' } = Astro.props;
 
 <div class="mx-auto max-w-6xl px-6">
   <h2 class="text-3xl md:text-4xl">{heading}</h2>
-  <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 list-none p-0 m-0">
+  <ul class="mt-8 grid list-none grid-cols-1 border-l border-t border-[color:var(--border)] p-0 sm:grid-cols-2 lg:grid-cols-3">
     {
       services.map((s, i) => (
-        <li class="card p-6 flex flex-col">
-          <span class="text-sm font-medium tabular-nums text-[color:var(--accent)]" aria-hidden="true">
-            {String(i + 1).padStart(2, '0')}
-          </span>
-          <h3 class="mt-3 text-xl">{s.title}</h3>
+        <li class="group flex flex-col border-b border-r border-[color:var(--border)] p-6 transition-colors duration-200 md:p-8" style="--hover: color-mix(in srgb, var(--accent) 4%, var(--surface));">
+          <div class="flex items-baseline gap-3">
+            <span class="text-sm font-medium tabular-nums text-[color:var(--accent)]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="h-px flex-1 bg-[color:var(--border)] transition-colors duration-200 group-hover:bg-[color:var(--accent)]" aria-hidden="true" />
+          </div>
+          <h3 class="mt-4 text-lg font-semibold">{s.title}</h3>
           {s.description && (
-            <p class="mt-2 text-[color:var(--muted)] text-pretty">{s.description}</p>
+            <p class="mt-2 text-[15px] text-pretty text-[color:var(--muted)]">{s.description}</p>
           )}
         </li>
       ))
     }
   </ul>
 </div>
+
+<style>
+  /* Tinta appena percettibile al passaggio del mouse (colore ricavato
+     dall'accent, così segue il cliente). È un cambio di colore, non di moto:
+     resta anche sotto prefers-reduced-motion. */
+  li.group:hover {
+    background-color: var(--hover);
+  }
+</style>

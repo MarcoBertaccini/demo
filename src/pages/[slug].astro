@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
+import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import HeroText from '../components/HeroText.astro';
 import About from '../components/About.astro';
@@ -60,6 +61,8 @@ const band = 'py-16 md:py-24';
 <BaseLayout title={pageTitle} description={metaDescription} accent={d.accent} type={d.type}>
   <SeoHead slot="head" slug={slug} data={d} />
 
+  {isStudio && <Header name={d.name} phone={d.phone} />}
+
   {
     isStudio ? (
       <HeroText
@@ -88,7 +91,7 @@ const band = 'py-16 md:py-24';
   <main>
     {
       hasAbout && (
-        <Section class={band} aria-label={isStudio ? 'Chi siamo' : 'La struttura'}>
+        <Section class={band} index={isStudio ? '01' : undefined} aria-label={isStudio ? 'Chi siamo' : 'La struttura'}>
           <About
             description={d.description}
             amenities={isStudio ? undefined : d.amenities}
@@ -100,7 +103,7 @@ const band = 'py-16 md:py-24';
 
     {
       hasServices && (
-        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Servizi">
+        <Section class={`${band} bg-[color:var(--surface)]`} index="02" aria-label="Servizi">
           <Services services={d.services!} />
         </Section>
       )
@@ -132,7 +135,7 @@ const band = 'py-16 md:py-24';
 
     {
       hasLocation && (
-        <Section class={band} aria-label="Dove siamo">
+        <Section class={band} index={isStudio ? '03' : undefined} aria-label="Dove siamo">
           <Location name={d.name} address={d.address} city={d.city} googleMapsUrl={d.googleMapsUrl} />
         </Section>
       )
@@ -140,7 +143,7 @@ const band = 'py-16 md:py-24';
 
     {
       hasContact && (
-        <Section class={`${band} bg-[color:var(--surface)]`} aria-label="Contatti">
+        <Section class={`${band} bg-[color:var(--surface)]`} index={isStudio ? '04' : undefined} aria-label="Contatti">
           <Contact
             phone={d.phone}
             phoneLabel={isStudio ? 'Telefono e fax' : undefined}

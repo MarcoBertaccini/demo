@@ -3,16 +3,30 @@
 // L'animazione è puramente CSS (opacity/transform); questo componente aggiunge
 // solo la classe e l'attributo osservato. L'IntersectionObserver è unico e vive
 // in BaseLayout.
+// `index` (opzionale, es. "01") stampa un piccolo indicatore numerato con
+// filetto sopra il contenuto: sistema editoriale che lega le sezioni. Se
+// assente, la sezione resta identica a prima (usato dai clienti lodging).
 interface Props {
   id?: string;
   class?: string;
+  index?: string;
   'aria-label'?: string;
   'aria-labelledby'?: string;
 }
 
-const { id, class: className, ...rest } = Astro.props;
+const { id, class: className, index, ...rest } = Astro.props;
 ---
 
 <section id={id} class:list={['fade-up', className]} {...rest}>
+  {
+    index && (
+      <div class="mx-auto mb-5 max-w-6xl px-6 md:mb-7">
+        <div class="flex items-center gap-4">
+          <span class="text-sm font-medium tabular-nums text-[color:var(--accent)]">{index}</span>
+          <span class="h-px w-12 bg-[color:var(--border)]" aria-hidden="true" />
+        </div>
+      </div>
+    )
+  }
   <slot />
 </section>
