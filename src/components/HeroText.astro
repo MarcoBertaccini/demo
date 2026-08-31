@@ -1,61 +1,116 @@
 ---
-// Hero senza immagine per i siti "studio": il peso visivo lo reggono
-// tipografia, spazio e un accento di colore, non una foto. Composizione:
-// eyebrow → nome → titolare → tagline → CTA (telefono / email).
+// Hero senza immagine per i siti "studio": una fascia piena a tutta larghezza
+// in accent sostituisce la foto che non abbiamo, e regge il peso visivo con
+// colore, tipografia e i contatti principali in evidenza. Composizione:
+// colonna sinistra (eyebrow → nome → titolare → tagline → CTA), colonna destra
+// (pannello contatti). Su mobile le due colonne si impilano.
 interface Props {
   name: string;
   owner?: string;
   tagline?: string;
   eyebrow?: string;
   phone?: string;
+  mobile?: string;
   email?: string;
+  address?: string;
+  city?: string;
 }
-const { name, owner, tagline, eyebrow, phone, email } = Astro.props;
+const { name, owner, tagline, eyebrow, phone, mobile, email, address, city } = Astro.props;
 const telHref = phone ? `tel:${phone.replace(/\s/g, '')}` : null;
+const mobHref = mobile ? `tel:${mobile.replace(/\s/g, '')}` : null;
 const mailHref = email ? `mailto:${email}` : null;
+const place = [address, city].filter(Boolean).join(', ');
+const hasContacts = Boolean(telHref || mobHref || mailHref || place);
 
 const ICON = {
   phone:
     '<path d="M13.83 19.11A15 15 0 0 1 4.89 10.17 2 2 0 0 1 6.18 7.7l1.9-.63a2 2 0 0 1 2.36 1.03l.66 1.45a2 2 0 0 1-.45 2.3l-.7.63a12 12 0 0 0 3.89 3.89l.63-.7a2 2 0 0 1 2.3-.45l1.45.66a2 2 0 0 1 1.03 2.36l-.63 1.9a2 2 0 0 1-2.47 1.29Z"/>',
+  mobile: '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
   email:
     '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a2 2 0 0 1-2.06 0L2 7"/>',
+  pin: '<path d="M20 10c0 4.4-5.6 9.2-7.3 10.6a1 1 0 0 1-1.4 0C9.6 19.2 4 14.4 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
 };
 ---
 
-<header class="relative overflow-hidden border-b border-[color:var(--border)]" style="background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg)) 0%, var(--bg) 100%);">
-  <div class="mx-auto w-full max-w-6xl px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-    {
-      eyebrow && (
-        <p class="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.14em] text-[color:var(--accent)]">
-          <span class="inline-block h-px w-8 bg-[color:var(--accent)]" aria-hidden="true" />
-          {eyebrow}
-        </p>
-      )
-    }
-    <h1 class="mt-5 max-w-3xl text-4xl sm:text-5xl md:text-6xl text-balance">{name}</h1>
-    {owner && <p class="mt-3 text-lg md:text-xl text-[color:var(--muted)]">{owner}</p>}
-    {
-      tagline && (
-        <p class="mt-6 max-w-2xl text-lg md:text-xl text-pretty">{tagline}</p>
-      )
-    }
-    {
-      (telHref || mailHref) && (
-        <div class="mt-9 flex flex-wrap gap-3">
-          {telHref && (
-            <a href={telHref} class="btn btn-accent">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.phone} />
-              Chiama {phone}
-            </a>
-          )}
-          {mailHref && (
-            <a href={mailHref} class="btn btn-outline">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.email} />
-              Scrivici
-            </a>
-          )}
-        </div>
-      )
-    }
+<header class="text-[color:var(--accent-fg)]" style="background-color: var(--accent);">
+  <div class="mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
+    <div class="grid gap-10 md:grid-cols-[1.6fr_1fr] md:gap-16 md:items-center">
+      <div>
+        {
+          eyebrow && (
+            <p class="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.16em] text-white/70">
+              <span class="inline-block h-px w-8 bg-white/50" aria-hidden="true" />
+              {eyebrow}
+            </p>
+          )
+        }
+        <h1 class="mt-5 text-3xl sm:text-4xl md:text-[2.75rem] md:leading-[1.08] font-medium tracking-[-0.02em] text-balance">
+          {name}
+        </h1>
+        {owner && <p class="mt-3 text-lg md:text-xl text-white/80">{owner}</p>}
+        {
+          tagline && (
+            <p class="mt-5 max-w-xl text-lg md:text-xl text-white/90 text-pretty">{tagline}</p>
+          )
+        }
+        {
+          (telHref || mailHref) && (
+            <div class="mt-8 flex flex-wrap gap-3">
+              {telHref && (
+                <a href={telHref} class="btn bg-white text-[color:var(--accent)] hover:opacity-90">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.phone} />
+                  Chiama {phone}
+                </a>
+              )}
+              {mailHref && (
+                <a href={mailHref} class="btn border border-white/45 text-white hover:bg-white/10">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.email} />
+                  Scrivici
+                </a>
+              )}
+            </div>
+          )
+        }
+      </div>
+
+      {
+        hasContacts && (
+          <div class="rounded-2xl border border-white/15 bg-white/10 p-6 md:p-7">
+            <ul class="space-y-4 list-none p-0 m-0">
+              {telHref && (
+                <li>
+                  <a href={telHref} class="flex items-start gap-3 text-white/95 hover:text-white transition-colors">
+                    <svg class="mt-0.5 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.phone} />
+                    <span><span class="block text-xs uppercase tracking-wider text-white/60">Telefono e fax</span>{phone}</span>
+                  </a>
+                </li>
+              )}
+              {mobHref && (
+                <li>
+                  <a href={mobHref} class="flex items-start gap-3 text-white/95 hover:text-white transition-colors">
+                    <svg class="mt-0.5 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.mobile} />
+                    <span><span class="block text-xs uppercase tracking-wider text-white/60">Cellulare</span>{mobile}</span>
+                  </a>
+                </li>
+              )}
+              {mailHref && (
+                <li>
+                  <a href={mailHref} class="flex items-start gap-3 text-white/95 hover:text-white transition-colors break-words">
+                    <svg class="mt-0.5 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.email} />
+                    <span><span class="block text-xs uppercase tracking-wider text-white/60">Email</span>{email}</span>
+                  </a>
+                </li>
+              )}
+              {place && (
+                <li class="flex items-start gap-3 text-white/95">
+                  <svg class="mt-0.5 shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICON.pin} />
+                  <span><span class="block text-xs uppercase tracking-wider text-white/60">Dove siamo</span>{place}</span>
+                </li>
+              )}
+            </ul>
+          </div>
+        )
+      }
+    </div>
   </div>
 </header>

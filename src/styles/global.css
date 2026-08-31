@@ -69,6 +69,10 @@
    (l'accent resta l'unica personalizzazione per singolo cliente). */
 :root[data-type="studio"] {
   --font-serif: "Inter", system-ui, -apple-system, sans-serif;
+  /* Muted più scuro del default: il testo lungo su crema deve stare
+     comodamente sopra l'AA, non solo i titoli. Override scoped, la palette
+     base (:root) resta invariata. */
+  --muted: #4c463f;
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────── */
